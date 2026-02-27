@@ -91,12 +91,11 @@ void pawnio_manager_init(void)
 	}
 
 	/* Load correct blob */
-
-	debug_print("start of binary: 0x%x\n", &embedded_data[0]);
-	debug_print("loading binary blob of size %u\n", EMBEDDED_BLOB_SIZE);
+	debug_print("start of binary: 0x%x\n", &blobs_AMDFamily17_bin[0]);
+	debug_print("loading binary blob of size %u\n", blobs_AMDFamily17_bin_len);
 
 	pawnio_open_local(&pawnio_handle);
-	HRESULT result = pawnio_load_local(pawnio_handle, &embedded_data[0], EMBEDDED_BLOB_SIZE);
+	HRESULT result = pawnio_load_local(pawnio_handle, &blobs_AMDFamily17_bin[0], blobs_AMDFamily17_bin_len);
 
 	if (result != S_OK)
 	{

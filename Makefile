@@ -17,6 +17,12 @@ assembly :
 main.obj: main.c
 	cl $(CFLAGS) $(dep) main.c
 	
+AMDFamily0F.obj: blobs/AMDFamily0F.c
+	cl $(CFLAGS) $(dep) blobs/AMDFamily0F.c
+
+AMDFamily10.obj: blobs/AMDFamily10.c
+	cl $(CFLAGS) $(dep) blobs/AMDFamily10.c
+
 AMDFamily17.obj: blobs/AMDFamily17.c
 	cl $(CFLAGS) $(dep) blobs/AMDFamily17.c
 	
@@ -45,5 +51,11 @@ re.obj : re/re.c
 clean:
 	del sysmon.exe $(obj) assembly.obj
 
+.PHONY: binary
+binary:
+	xxd -i blobs/AMDFamily0F.bin > blobs/AMDFamily0F.c
+	xxd -i blobs/AMDFamily10.bin > blobs/AMDFamily10.c
+	xxd -i blobs/AMDFamily17.bin > blobs/AMDFamily17.c
+	
 # unused assembly options
 # /subsystem:windows /defaultlib:kernel32.lib /defaultlib:user32.lib

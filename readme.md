@@ -10,12 +10,12 @@ requires:
 
 To build, start "x64 Native Tools Command Prompt for VS 2022", navigate to repo and simply use make. Requires admin privileges to run.
 
-## Libraries
+## Libraries and tools
 SysMon uses:
 * PawnIO to read CPU temperature
 * Mini-Regex for extracting data from command line output
 * NVIDIA API to read load and temperature of GPU
-* HxD for converting .bin blobs into .c files. Probably should find some command-line alternative line xxd, so automation is possible.
+* xxd to convert .bin blobs into .c files for embedding into final executable
 
 ## Other acknowledgements
 LibreHardwareMonitor was a huge inspiration in creating this project.
