@@ -15,6 +15,7 @@ SysMon uses:
 * PawnIO to read CPU temperature
 * Mini-Regex for extracting data from command line output
 * NVIDIA API to read load and temperature of GPU
+* HxD for converting .bin blobs into .c files. Probably should find some command-line alternative line xxd, so automation is possible.
 
 ## Other acknowledgements
 LibreHardwareMonitor was a huge inspiration in creating this project.
