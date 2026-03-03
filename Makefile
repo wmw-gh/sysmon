@@ -47,11 +47,10 @@ ram.obj: ram/ram.c
 re.obj : re/re.c
 	cl $(CFLAGS) $(dep) re/re.c
 
-.PHONY: clean
+.PHONY: clean binary
 clean:
 	del sysmon.exe $(obj) assembly.obj
 
-.PHONY: binary
 binary:
 	xxd -i blobs/AMDFamily0F.bin > blobs/AMDFamily0F.c
 	xxd -i blobs/AMDFamily10.bin > blobs/AMDFamily10.c
