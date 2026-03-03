@@ -1,21 +1,26 @@
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdbool.h>
+#include <wchar.h>
+#include <stdarg.h>
+#include <locale.h>
 
-static bool debug = false;
-
-void debug_print(const char* msg, ...)
+void log_string(const wchar_t *format, ...)
 {
-	va_list args;
-	va_start(args, msg);
-	
-	if (debug)
-	{
-		printf(msg);
-	}
-}
+    if (format == NULL)
+        return;
 
-void debug_set(bool debugSet)
-{
-	debug = debugSet;
+    setlocale(LC_ALL, "");
+
+    FILE *file = _wfopen(L"log.txt", L"a, ccs=UTF-8");
+    if (file == NULL)
+        return;
+
+    va_list args;
+    va_start(args, format);
+
+    vfwprintf(file, format, args);
+    fwprintf(file, L"\n");
+
+    va_end(args);
+
+    fclose(file);
 }

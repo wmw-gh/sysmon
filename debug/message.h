@@ -1,5 +1,5 @@
 #pragma once
-#include <stdbool.h>
 
-extern void debug_print(const char* msg, ...);
-extern void debug_set(bool debugSet);
+#include <wchar.h>
+
+extern void log_string(const wchar_t *format, ...);

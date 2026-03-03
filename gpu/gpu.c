@@ -89,7 +89,7 @@ void gpu_get_temperature(unsigned int* temp)
 		status = PdhOpenQuery(NULL, 0, &query);
 		if (status != ERROR_SUCCESS) 
 		{
-			debug_print("PdhOpenQuery failed\n");
+			log_string(L"PdhOpenQuery failed\n");
 			return;
 		}
 		
@@ -100,7 +100,7 @@ void gpu_get_temperature(unsigned int* temp)
 		
 		if (status != ERROR_SUCCESS) 
 		{
-			debug_print("PdhAddEnglishCounter failed (0x%x)\n", status);
+			log_string(L"PdhAddEnglishCounter failed (0x%x)\n", status);
 			PdhCloseQuery(query);
 			return;
 		}
@@ -118,11 +118,11 @@ void gpu_get_temperature(unsigned int* temp)
 		{
 			// Convert from Kelvin to Celsius
 			tempC = (value.doubleValue / 10.0) - 273.15;
-			debug_print("GPU Temperature: %.1f °C\n", tempC);
+			log_string(L"GPU Temperature: %.1f °C\n", tempC);
 		}
 		else
 		{
-			debug_print("PdhGetFormattedCounterValue failed\n");
+			log_string(L"PdhGetFormattedCounterValue failed\n");
 		}
 		
 		*temp = (unsigned int)round(tempC);
@@ -130,8 +130,8 @@ void gpu_get_temperature(unsigned int* temp)
 	else
 	{
 		NvU32 sensorIndex = 0;
-		debug_print("Thermal settings version %u\n", NV_GPU_THERMAL_SETTINGS_VER);
-		debug_print("Number of thermal settings %u\n", NVAPI_MAX_THERMAL_SENSORS_PER_GPU - 1);
+		log_string(L"Thermal settings version %u\n", NV_GPU_THERMAL_SETTINGS_VER);
+		log_string(L"Number of thermal settings %u\n", NVAPI_MAX_THERMAL_SENSORS_PER_GPU - 1);
 		
 		NV_GPU_THERMAL_SETTINGS thermalSettings;
 		
@@ -140,12 +140,12 @@ void gpu_get_temperature(unsigned int* temp)
 		
 		if (NVAPI_OK == ret)
 		{
-			debug_print("Thermal settings of GPU read OK\n");
-			debug_print("Current temperature %u%cC\n", thermalSettings.sensor->currentTemp, 167U);
+			log_string(L"Thermal settings of GPU read OK\n");
+			log_string(L"Current temperature %u%cC\n", thermalSettings.sensor->currentTemp, 167U);
 		}
 		else
 		{
-			debug_print("Unable to read thermal settings, error: %i\n", ret);
+			log_string(L"Unable to read thermal settings, error: %i\n", ret);
 		}
 		
 		*temp = thermalSettings.sensor->currentTemp;
@@ -164,12 +164,12 @@ void gpu_get_load(double* load)
 		
 		if (PdhOpenQuery(NULL, 0, &query) != ERROR_SUCCESS)
 		{
-			debug_print("PdhOpenQuery failed");
+			log_string(L"PdhOpenQuery failed");
 		}
 		
 		if (PdhAddEnglishCounter(query, "\\GPU Engine(*engtype_3D)\\Utilization Percentage", 0, &counter) != ERROR_SUCCESS)
 		{
-			debug_print("PdhAddEnglishCounter failed");
+			log_string(L"PdhAddEnglishCounter failed");
 		}
 		
 		PdhCollectQueryData(query);
@@ -182,12 +182,12 @@ void gpu_get_load(double* load)
 		
 		if (!items)
 		{
-			debug_print("Out of memory");
+			log_string(L"Out of memory");
 		}
 		
 		if (ERROR_SUCCESS != PdhGetFormattedCounterArray(counter, PDH_FMT_DOUBLE, &bufSize, &itemCount, items))
 		{
-			debug_print("PdhGetFormattedCounterArray failed");
+			log_string(L"PdhGetFormattedCounterArray failed");
 		}
 		
 		for (DWORD i = 0; i < itemCount; i++) 
@@ -198,26 +198,26 @@ void gpu_get_load(double* load)
 			}
 		}
 		
-		debug_print("iGPU 3D Load: %3.1f\n", totalLoad);
+		log_string(L"iGPU 3D Load: %3.1f\n", totalLoad);
 		*load = totalLoad;
 		free(items);
 		PdhCloseQuery(query);
 	}
 	else
 	{
-		debug_print("Pstates settings version %u\n", NV_GPU_DYNAMIC_PSTATES_INFO_EX_VER);
+		log_string(L"Pstates settings version %u\n", NV_GPU_DYNAMIC_PSTATES_INFO_EX_VER);
 	
 		NV_GPU_PERF_PSTATE_ID currentPstate;
 		NvAPI_Status ret = NvAPI_GPU_GetCurrentPstate(gpuHandles[0], &currentPstate);
 		
 		if (NVAPI_OK == ret)
 		{
-			debug_print("GPU Pstates read OK\n");
-			debug_print("GPU is in Pstate: %u\n", currentPstate);
+			log_string(L"GPU Pstates read OK\n");
+			log_string(L"GPU is in Pstate: %u\n", currentPstate);
 		}
 		else
 		{
-			debug_print("Unable to read Pstates, error: %i\n", ret);
+			log_string(L"Unable to read Pstates, error: %i\n", ret);
 		}
 		
 		NV_GPU_DYNAMIC_PSTATES_INFO_EX dynamicPstates;
@@ -225,12 +225,12 @@ void gpu_get_load(double* load)
 		ret = NvAPI_GPU_GetDynamicPstatesInfoEx(gpuHandles[0], &dynamicPstates);
 		if (NVAPI_OK == ret)
 		{
-			debug_print("GPU extended Pstates read OK\n");
-			debug_print("GPU load is: %u\n", dynamicPstates.utilization[0].percentage);
+			log_string(L"GPU extended Pstates read OK\n");
+			log_string(L"GPU load is: %u\n", dynamicPstates.utilization[0].percentage);
 		}
 		else
 		{
-			debug_print("Unable to read extended Pstates, error: %i\n", ret);
+			log_string(L"Unable to read extended Pstates, error: %i\n", ret);
 		}
 		
 		*load = dynamicPstates.utilization[0].percentage;
@@ -254,7 +254,7 @@ static void detect_gpu(WCHAR* name)
 	
     if (FAILED(result))
     {
-        debug_print("CoInitializeEx failed: 0x%08X\n", result);
+        log_string(L"CoInitializeEx failed: 0x%08X\n", result);
         return;
     }
 
@@ -262,12 +262,12 @@ static void detect_gpu(WCHAR* name)
     result = CreateDXGIFactory(&IID_IDXGIFactory, (void **)&pFactory);
     if (FAILED(result))
     {
-        debug_print("CreateDXGIFactory failed: 0x%08X\n", result);
+        log_string(L"CreateDXGIFactory failed: 0x%08X\n", result);
         CoUninitialize();
         return;
     }
 
-    debug_print("Enumerating GPU adapters:\n");
+    log_string(L"Enumerating GPU adapters:\n");
 
     // Enumerate adapters
     while (IDXGIFactory_EnumAdapters(pFactory, i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
@@ -307,17 +307,17 @@ static void nvidia_lib_init(void)
     if (status != NVAPI_OK)
     {
         NvAPI_GetErrorMessage(status, szError);
-        debug_print("NvAPI_Initialize() failed. Error code is: %s", szError);
+        log_string(L"NvAPI_Initialize() failed. Error code is: %s", szError);
     }
 	
 	if (NVAPI_INVALID_ARGUMENT == NvAPI_EnumPhysicalGPUs(gpuHandles, &gpuCount))
 	{
-		debug_print("Unable to enumerate GPUs available on system\n");
+		log_string(L"Unable to enumerate GPUs available on system\n");
 	}
 	else
 	{
-		debug_print("Detected %u GPUs\n", gpuCount);
-		debug_print("Handle of first GPU: %u\n", (unsigned int)gpuHandles[0]);
+		log_string(L"Detected %u GPUs\n", gpuCount);
+		log_string(L"Handle of first GPU: %u\n", (unsigned int)gpuHandles[0]);
 	}
 }
 

@@ -117,7 +117,7 @@ extern void	net_read_ip(WCHAR* ip)
     int match_idx = re_matchp(pattern, line, &match_length);
     if (match_idx != -1)
     {
-      debug_print("match at idx %i, %i chars long.\n", match_idx, match_length);
+      log_string(L"match at idx %i, %i chars long.\n", match_idx, match_length);
     }
 
 	char* ip_addr = malloc((sizeof(char)*match_length) + 1);
@@ -125,7 +125,7 @@ extern void	net_read_ip(WCHAR* ip)
 	ip_addr[match_length] = '\0';
 	strncpy(ip_addr, line + match_idx, match_length);
 
-	debug_print("ip address: %s\n", ip_addr);
+	log_string(L"ip address: %s\n", ip_addr);
 	
 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, ip_addr, -1, NULL, 0);
 	WCHAR* wide = malloc(sizeof(WCHAR) * size_needed);
@@ -153,7 +153,7 @@ extern void	net_read_gateway(WCHAR* gateway)
     int match_idx = re_matchp(pattern, line, &match_length);
     if (match_idx != -1)
     {
-      debug_print("match at idx %i, %i chars long.\n", match_idx, match_length);
+      log_string(L"match at idx %i, %i chars long.\n", match_idx, match_length);
     }
 
 	char* ip_addr = malloc((sizeof(char)*match_length) + 1);
@@ -161,7 +161,7 @@ extern void	net_read_gateway(WCHAR* gateway)
 	ip_addr[match_length] = '\0';
 	strncpy(ip_addr, line + match_idx, match_length);
 
-	debug_print("ip address: %s\n", ip_addr);
+	log_string(L"ip address: %s\n", ip_addr);
 	
 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, ip_addr, -1, NULL, 0);
 	WCHAR* wide = malloc(sizeof(WCHAR) * size_needed);
@@ -189,11 +189,11 @@ extern void	net_read_dhcp(WCHAR* dhcp)
     int match_idx = re_matchp(pattern, line, &match_length);
     if (match_idx != -1)
     {
-		debug_print("match at idx %i, %i chars long.\n", match_idx, match_length);
+		log_string(L"match at idx %i, %i chars long.\n", match_idx, match_length);
     }
 	else
 	{
-		debug_print("no match found\n");
+		log_string(L"no match found\n");
 	}
 
 	char* ip_addr = malloc((sizeof(char)*match_length) + 1);
@@ -201,7 +201,7 @@ extern void	net_read_dhcp(WCHAR* dhcp)
 	ip_addr[match_length] = '\0';
 	strncpy(ip_addr, line + match_idx, match_length);
 
-	debug_print("ip address: %s\n", ip_addr);
+	log_string(L"ip address: %s\n", ip_addr);
 	
 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, ip_addr, -1, NULL, 0);
 	WCHAR* wide = malloc(sizeof(WCHAR) * size_needed);
@@ -234,22 +234,22 @@ static void execute_cmd(char* cmd, char* buffer, DWORD* bytes_read)
 	
 	if (CreatePipe(&handleOutRead, &handleOutWrite, &sa, 0))
 	{
-		debug_print("created std pipe\n");
+		log_string(L"created std pipe\n");
 	}
 	else
 	{
-		debug_print("failed to create std pipe\n");
+		log_string(L"failed to create std pipe\n");
 	}
 	
 	SetHandleInformation(handleOutRead, HANDLE_FLAG_INHERIT, 0);
 	
 	if (CreatePipe(&handleInRead, &handleInWrite, &sa, 0))
 	{
-		debug_print("created err pipe\n");
+		log_string(L"created err pipe\n");
 	}
 	else
 	{
-		debug_print("failed to create err pipe\n");
+		log_string(L"failed to create err pipe\n");
 	}
 
 	SetHandleInformation(handleInRead, HANDLE_FLAG_INHERIT, 0);
@@ -288,13 +288,13 @@ static void execute_cmd(char* cmd, char* buffer, DWORD* bytes_read)
 		
 		if (result)
 		{
-			debug_print("data read correctly from pipe\n");
-			debug_print("read %u bytes\n", *bytes_read);
-			debug_print("data: \n%s", buffer);
+			log_string(L"data read correctly from pipe\n");
+			log_string(L"read %u bytes\n", *bytes_read);
+			log_string(L"data: \n%s", buffer);
 		}
 		else
 		{
-			debug_print("failed to read from pipe, 0x%X\n", GetLastError());
+			log_string(L"failed to read from pipe, 0x%X\n", GetLastError());
 		}
 		
 		CloseHandle(processInfo.hProcess);
@@ -302,7 +302,7 @@ static void execute_cmd(char* cmd, char* buffer, DWORD* bytes_read)
 	}
 	else
 	{
-		debug_print("failed to start process, error code %u\n", GetLastError());
+		log_string(L"failed to start process, error code %u\n", GetLastError());
 	}
 
 	/* handle cleanup */
@@ -324,31 +324,31 @@ static void find_line(char* buffer, const char* word, char* line)
 	char *start = strstr(buffer, word);
 	if (NULL == start)
 	{
-		debug_print("did not find string %s\n", word);
+		log_string(L"did not find string %s\n", word);
 	}
 	else
 	{
 		word_start = (int)(start - buffer);
-		debug_print("beginning of string %u\n", buffer);
-		debug_print("symbol at %u\n", start);
-		debug_print("found word %s at position %u\n", word, word_start);
+		log_string(L"beginning of string %u\n", buffer);
+		log_string(L"symbol at %u\n", start);
+		log_string(L"found word %s at position %u\n", word, word_start);
 	}
 	
 	char *end = strchr(buffer+word_start, '\n');
 	if (NULL == end)
 	{
-		debug_print("did not find newline\n");
+		log_string(L"did not find newline\n");
 	}
 	else
 	{
 		word_end = (int)(end - buffer);
-		debug_print("beginning of string %u\n", buffer);
-		debug_print("symbol at %u\n", end);
-		debug_print("found newline at position %u\n", word_end);
+		log_string(L"beginning of string %u\n", buffer);
+		log_string(L"symbol at %u\n", end);
+		log_string(L"found newline at position %u\n", word_end);
 	}
 	
 	int length = word_end - word_start;
-	debug_print("length of string to be copied %u\n", length);
+	log_string(L"length of string to be copied %u\n", length);
 	strncpy(line, buffer+word_start, length);
-	debug_print("full string with IP address: %s\n", line);
+	log_string(L"full string with IP address: %s\n", line);
 }

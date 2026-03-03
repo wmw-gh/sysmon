@@ -6,14 +6,14 @@ void ram_get_total(LONGLONG* ramMb)
 	LONGLONG totalRam = 0;
 	if (GetPhysicallyInstalledSystemMemory((PULONGLONG)&totalRam))
 	{
-		debug_print("ram read ok, total ram in:\n");
-		debug_print("Kb: %u\n", totalRam);
-		debug_print("Mb: %u\n", totalRam/1024);
-		debug_print("Gb: %f\n", (double)totalRam/(1024*1024));
+		log_string(L"ram read ok, total ram in:\n");
+		log_string(L"Kb: %u\n", totalRam);
+		log_string(L"Mb: %u\n", totalRam/1024);
+		log_string(L"Gb: %f\n", (double)totalRam/(1024*1024));
 	}
 	else
 	{
-		debug_print("ram info not available\n");
+		log_string(L"ram info not available\n");
 	}
 	
 	*ramMb = (totalRam/1024);
@@ -26,12 +26,12 @@ void ram_get_load(int* ramLoad)
 	
 	if (GlobalMemoryStatusEx(&memStat))
 	{
-		debug_print("ram usage info read ok\n");
-		debug_print("dwMemoryLoad: %u\n", memStat.dwMemoryLoad);
+		log_string(L"ram usage info read ok\n");
+		log_string(L"dwMemoryLoad: %u\n", memStat.dwMemoryLoad);
 	}
 	else
 	{
-		debug_print("ram usage info not available\n");
+		log_string(L"ram usage info not available\n");
 	}
 	
 	*ramLoad = memStat.dwMemoryLoad;
