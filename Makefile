@@ -5,10 +5,17 @@ dep = $(addprefix /I,$(inc))
 abs = $(notdir $(src))
 obj = $(abs:.c=.obj) $(abs */*.c)
 
-CFLAGS = /W4 /c /nologo 
-DFLAGS = /Zi /Od /MDd /FS
+BUILD ?= release
 
-sysmon : $(obj) assembly
+ifeq ($(BUILD), release)
+	CFLAGS = /W4 /c /nologo
+else ifeq ($(BUILD), debug)
+	CFLAGS = /Zi /Od /MDd /c /nologo
+endif
+
+all: release
+
+release : $(obj) assembly
 	cl $(dep) $(obj) assembly.obj /link gpu/nvapi64.lib iphlpapi.lib ws2_32.lib /out:sysmon.exe
 	
 assembly :
@@ -49,13 +56,10 @@ re.obj : re/re.c
 
 .PHONY: clean
 clean:
-	del sysmon.exe $(obj) assembly.obj
+	del sysmon.exe $(obj) assembly.obj vc140.pdb main.pdb
 
 .PHONY: binary
 binary:
 	xxd -i blobs/AMDFamily0F.bin > blobs/AMDFamily0F.c
 	xxd -i blobs/AMDFamily10.bin > blobs/AMDFamily10.c
 	xxd -i blobs/AMDFamily17.bin > blobs/AMDFamily17.c
-	
-# unused assembly options
-# /subsystem:windows /defaultlib:kernel32.lib /defaultlib:user32.lib

@@ -8,7 +8,8 @@ requires:
 * GNU Make for Windows
 * (optional) Windows Terminal for nicer display than plain command line
 
-To build, start "x64 Native Tools Command Prompt for VS 2022", navigate to repo and simply use make. Requires admin privileges to run.
+To build, start "x64 Native Tools Command Prompt for VS 2022", navigate to repo and call "make". For debug build use "make BUILD=debug" instead.
+Requires admin privileges to run.
 
 ## Libraries and tools
 SysMon uses:
